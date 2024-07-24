@@ -11,6 +11,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSidebar = document.getElementById("close-sidebar");
   const app = document.getElementById("app");
 
+  // Modal elements
+  const editModal = document.getElementById("edit-modal");
+  const editNoteContent = document.getElementById("edit-note-content");
+  const closeEditModal = document.getElementById("close-edit-modal");
+  const saveEdit = document.getElementById("save-edit");
+
+  const deleteModal = document.getElementById("delete-modal");
+  const closeDeleteModal = document.getElementById("close-delete-modal");
+  const confirmDelete = document.getElementById("confirm-delete");
+  const cancelDelete = document.getElementById("cancel-delete");
+
+  let selectedNote = null;
+
   // Toggle slider menu
   menuIcon.addEventListener("click", () => {
     sliderMenu.classList.toggle("open");
@@ -24,15 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
     mainContent.classList.remove("shrink");
     app.classList.remove("shrink");
   });
-
-  // Close slider menu when clicking outside
-  // document.addEventListener("click", (event) => {
-  //   if (!sliderMenu.contains(event.target) && event.target !== menuIcon) {
-  //     sliderMenu.classList.remove("open");
-  //     mainContent.classList.remove("shrink");
-  //     app.classList.remove("shrink");
-  //   }
-  // });
 
   // Load notes from the server
   const loadNotes = async () => {
@@ -49,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const noteElement = document.createElement("div");
         noteElement.className = "note";
         noteElement.setAttribute("data-id", note.id);
-        noteElement.contentEditable = "true";
+        noteElement.contentEditable = "false";
         noteElement.innerText = note.content;
         noteElement.addEventListener("click", () => selectNote(noteElement));
         notesList.appendChild(noteElement);
@@ -106,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
       note.classList.remove("selected");
     });
     noteElement.classList.add("selected");
+    selectedNote = noteElement;
   };
 
   // Add a new note
@@ -126,33 +131,60 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = noteElement.getAttribute("data-id");
       const content = noteElement.innerText;
       await updateNote(id, content);
+      noteElement.contentEditable = "false";
     });
   });
 
   // Delete selected note
-  deleteNoteButton.addEventListener("click", async () => {
-    const selectedNote = document.querySelector(".note.selected");
+  deleteNoteButton.addEventListener("click", () => {
     if (selectedNote) {
-      const id = selectedNote.getAttribute("data-id");
-      await deleteNote(id);
-      selectedNote.remove();
+      deleteModal.style.display = "block";
     } else {
       alert("Please select a note to delete.");
     }
   });
 
-  // Edit selected note (we'll just focus it for editing)
+  // Edit selected note
   editNoteButton.addEventListener("click", () => {
-    const selectedNote = document.querySelector(".note.selected");
     if (selectedNote) {
-      const newContent = prompt("Edit your note:", selectedNote.innerText);
-      if (newContent !== null) {
-        selectedNote.innerText = newContent;
-        const id = selectedNote.getAttribute("data-id");
-        updateNote(id, newContent);
-      }
+      editNoteContent.value = selectedNote.innerText;
+      editModal.style.display = "block";
     } else {
       alert("Please select a note to edit.");
+    }
+  });
+
+  // Handle edit modal actions
+  closeEditModal.addEventListener("click", () => {
+    editModal.style.display = "none";
+  });
+
+  saveEdit.addEventListener("click", () => {
+    if (selectedNote) {
+      const newContent = editNoteContent.value;
+      selectedNote.innerText = newContent;
+      selectedNote.contentEditable = "false";
+      const id = selectedNote.getAttribute("data-id");
+      updateNote(id, newContent);
+      editModal.style.display = "none";
+    }
+  });
+
+  // Handle delete modal actions
+  closeDeleteModal.addEventListener("click", () => {
+    deleteModal.style.display = "none";
+  });
+
+  cancelDelete.addEventListener("click", () => {
+    deleteModal.style.display = "none";
+  });
+
+  confirmDelete.addEventListener("click", async () => {
+    if (selectedNote) {
+      const id = selectedNote.getAttribute("data-id");
+      await deleteNote(id);
+      selectedNote.remove();
+      deleteModal.style.display = "none";
     }
   });
 
