@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Note App</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="nav-bar">
+        <div id="menu-icon">☰</div>
+        <h1>Note App</h1>
+        <button id="logout">Logout</button>
+      </header>
+      <aside id="slider-menu">
+        <div id="close-sidebar">&times;</div>
+        <button id="add-note">Add Note</button>
+        <button id="save-note">Save All Notes</button>
+        <button id="delete-note">Delete Selected Note</button>
+        <button id="edit-note">Edit Selected Note</button>
+        <input type="text" id="search" placeholder="Search notes..." />
+      </aside>
+      <main>
+        <div id="notes-list"></div>
+      </main>
+    </div>
+    <script defer src="/js/main.js"></script>
+    <script defer src="/js/logout.js"></script>
+  </body>
+</html>
